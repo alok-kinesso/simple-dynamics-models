@@ -19,22 +19,22 @@ shift = 0.33
 # replication
 replication = 2.0
 # transition functions
-def b(state, scale=scale, shift=shift):
+def next_b(state, scale=scale, shift=shift):
   i = state[-1][2]
   return 1.0/(1.0 + np.exp(-1.0*scale*(np.tan(np.pi*(np.power(i,shift)) - np.pi/2))))
 
-def i(state, R=replication):
+def next_i(state, R=replication):
   s = 1.0 - (state[-1][1]+state[-1][2]) # s + i + o = 1.0
   at_risk = s*(R-b)
   return at_risk*i
 
-def o(state, decay=k):
+def next_o(state, decay=k):
   o = state[-1][-1]
   ip = state[0][2]
   return np.min(k*o + ip, 1.0)
 
 for t in range(20):
-  new_vector = [b(state), i(state), o(state)]
-  state += new_vector
+  next_vector = [next_b(state), next_i(state), next_o(state)]
+  state += next_vector
   state = state[1:]
-  print(new_vector)
+  print(next_vector)
